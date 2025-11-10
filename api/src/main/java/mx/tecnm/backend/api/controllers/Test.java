@@ -3,7 +3,6 @@ package mx.tecnm.backend.api.controllers;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import mx.tecnm.backend.api.models.Producto;
 @RequestMapping("/test")
 @RestController
@@ -22,7 +21,7 @@ public class Test
     p.precio=15.5;
     p.codigoBarras="1234567890123";
     return new Producto[]{p};
-}
+ }
  @GetMapping("/productos")
  public Producto[] getProductos()
  {
@@ -39,5 +38,5 @@ public class Test
     p3.precio=13.0;
     p3.codigoBarras="1234567890125";
     return new Producto[]{p, p2, p3};
-}
+ }
 }
