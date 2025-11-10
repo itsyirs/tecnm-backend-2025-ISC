@@ -14,8 +14,17 @@ public class Test
  {
     return "Hola API Rest";
  }
- @GetMapping("/producto")
+  @GetMapping("/producto")
  public Producto[] getProducto()
+ {
+    Producto p = new Producto();
+    p.nombre="Coca Cola";
+    p.precio=15.5;
+    p.codigoBarras="1234567890123";
+    return new Producto[]{p};
+}
+ @GetMapping("/productos")
+ public Producto[] getProductos()
  {
     Producto p = new Producto();
     p.nombre="Coca Cola";
