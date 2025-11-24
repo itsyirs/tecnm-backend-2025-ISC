@@ -21,5 +21,5 @@ public class CategoriaController {
         List<Categoria> resultado = repo.obtenerCategorias();
         return ResponseEntity.ok(resultado);
     }
-
+    
 }
