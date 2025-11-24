@@ -1,3 +1,7 @@
-mx/tecnm/backend/api/controllers/Test.class
+mx/tecnm/backend/api/repository/CategoriaRM.class
 mx/tecnm/backend/api/models/Producto.class
+mx/tecnm/backend/api/controllers/CategoriaController.class
 mx/tecnm/backend/api/ApiApplication.class
+mx/tecnm/backend/api/models/Categoria.class
+mx/tecnm/backend/api/controllers/Test.class
+mx/tecnm/backend/api/repository/CategoriaDAO.class

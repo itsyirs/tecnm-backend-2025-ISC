@@ -1,3 +1,7 @@
 /workspaces/tecnm-backend-2025-ISC/api/src/main/java/mx/tecnm/backend/api/ApiApplication.java
+/workspaces/tecnm-backend-2025-ISC/api/src/main/java/mx/tecnm/backend/api/controllers/CategoriaController.java
 /workspaces/tecnm-backend-2025-ISC/api/src/main/java/mx/tecnm/backend/api/controllers/Test.java
+/workspaces/tecnm-backend-2025-ISC/api/src/main/java/mx/tecnm/backend/api/models/Categoria.java
 /workspaces/tecnm-backend-2025-ISC/api/src/main/java/mx/tecnm/backend/api/models/Producto.java
+/workspaces/tecnm-backend-2025-ISC/api/src/main/java/mx/tecnm/backend/api/repository/CategoriaDAO.java
+/workspaces/tecnm-backend-2025-ISC/api/src/main/java/mx/tecnm/backend/api/repository/CategoriaRM.java
