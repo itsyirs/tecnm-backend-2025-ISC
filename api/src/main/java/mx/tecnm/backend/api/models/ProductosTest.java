@@ -1,6 +1,6 @@
 package mx.tecnm.backend.api.models;
 
-public class Productos
+public class ProductosTest
 {
  public String nombre;
  public double precio;
