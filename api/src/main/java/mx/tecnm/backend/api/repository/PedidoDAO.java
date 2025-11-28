@@ -14,7 +14,7 @@ public class PedidoDAO {
     @Autowired
     private JdbcClient jdbcClient;
     public List<Pedido> obtenerPedidos() {
-        String sql = "SELECT id, fecha, importe_productos, importe_envio, usuarios_id, metodos_pago_id, fecha_hora_pago, importe_iva, total, numero FROM pedidos";
+        String sql = "SELECT id, fecha, importe_productos, importe_envio, usuarios_id, metodos_pago_id, fecha_hora_pago, importe_iva, total, numero FROM pedidos WHERE activo=true";
         return jdbcClient.sql(sql)
                 .query(new PedidoRM())
                 .list();
@@ -42,6 +42,6 @@ public class PedidoDAO {
             .param("id", id)
             .query((rs,rowNum) -> rs.getInt("id"))
             .single();
-        return filas == 1 ? obtenerPedidoPorId(filas) : null;
+        return filas > 0 ? obtenerPedidoPorId(id) : null;
     }
 }

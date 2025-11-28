@@ -43,6 +43,6 @@ public class UsuarioDAO {
             .param("id", id)
             .query((rs,rowNum) -> rs.getInt("id"))
             .single();
-        return filas == 1 ? obtenerUsuarioPorId(filas) : null;
+        return filas > 0 ? obtenerUsuarioPorId(id) : null;
     }
 }
