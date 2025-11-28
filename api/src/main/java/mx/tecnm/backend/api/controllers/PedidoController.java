@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import mx.tecnm.backend.api.dto.PUTPedidoDTO;
 import mx.tecnm.backend.api.dto.PedidoDTO;
 import mx.tecnm.backend.api.models.Pedido;
 import mx.tecnm.backend.api.repository.PedidoDAO;
@@ -56,7 +57,7 @@ public class PedidoController {
         }
     }
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarPedido(@PathVariable int id, @RequestBody PedidoDTO pedido) {
+    public ResponseEntity<?> actualizarPedido(@PathVariable int id, @RequestBody PUTPedidoDTO pedido) {
         Pedido pedidoActualizado = pedidoDAO.actualizarPedido(id, pedido);
         if (pedidoActualizado != null) {
             return ResponseEntity.ok(pedidoActualizado);

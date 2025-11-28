@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import mx.tecnm.backend.api.dto.PUTProductoDTO;
 import mx.tecnm.backend.api.dto.ProductoDTO;
 import mx.tecnm.backend.api.models.Producto;
 
@@ -52,8 +53,8 @@ public class ProductoDAO {
             .single();
         return filas > 0 ? obtenerProductoPorId(id) : null;
     }
-    public Producto actualizarProducto(int id, ProductoDTO producto) {
-        int filas = jdbcClient.sql("UPDATE productos SET nombre=:nombre, precio=:precio, sku=:sku, color=:color, marca=:marca, descripcion=:descripcion, peso=:peso, alto=:alto, ancho=:ancho, profundidad=:profundidad, categorias_id=:categorias_id WHERE id=:id RETURNING id")
+    public Producto actualizarProducto(int id, PUTProductoDTO producto) {
+        int filas = jdbcClient.sql("UPDATE productos SET nombre=:nombre, precio=:precio, sku=:sku, color=:color, marca=:marca, descripcion=:descripcion, peso=:peso, alto=:alto, ancho=:ancho, profundidad=:profundidad WHERE id=:id RETURNING id")
             .param("id", id)
             .param("nombre", producto.nombre())
             .param("precio", producto.precio())
@@ -65,7 +66,6 @@ public class ProductoDAO {
             .param("alto", producto.alto())
             .param("ancho", producto.ancho())
             .param("profundidad", producto.profundidad())
-            .param("categorias_id", producto.categorias_id())
             .query((rs,rowNum) -> rs.getInt("id"))
             .single();
         return filas > 0 ? obtenerProductoPorId(id) : null;
