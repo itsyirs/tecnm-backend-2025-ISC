@@ -1,6 +1,4 @@
 package mx.tecnm.backend.api.repository;
-
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
