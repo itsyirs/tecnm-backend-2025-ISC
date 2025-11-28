@@ -52,4 +52,22 @@ public class ProductoDAO {
             .single();
         return filas > 0 ? obtenerProductoPorId(id) : null;
     }
+    public Producto actualizarProducto(int id, ProductoDTO producto) {
+        int filas = jdbcClient.sql("UPDATE productos SET nombre=:nombre, precio=:precio, sku=:sku, color=:color, marca=:marca, descripcion=:descripcion, peso=:peso, alto=:alto, ancho=:ancho, profundidad=:profundidad, categorias_id=:categorias_id WHERE id=:id RETURNING id")
+            .param("id", id)
+            .param("nombre", producto.nombre())
+            .param("precio", producto.precio())
+            .param("sku", producto.sku())
+            .param("color", producto.color())
+            .param("marca", producto.marca())
+            .param("descripcion", producto.descripcion())
+            .param("peso", producto.peso())
+            .param("alto", producto.alto())
+            .param("ancho", producto.ancho())
+            .param("profundidad", producto.profundidad())
+            .param("categorias_id", producto.categorias_id())
+            .query((rs,rowNum) -> rs.getInt("id"))
+            .single();
+        return filas > 0 ? obtenerProductoPorId(id) : null;
+    }
 }

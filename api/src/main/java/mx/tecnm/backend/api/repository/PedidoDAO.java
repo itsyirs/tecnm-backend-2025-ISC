@@ -44,4 +44,15 @@ public class PedidoDAO {
             .single();
         return filas > 0 ? obtenerPedidoPorId(id) : null;
     }
+    public Pedido actualizarPedido(int id, PedidoDTO pedido) {
+        int filas = jdbcClient.sql("UPDATE pedidos SET importe_productos=:importe_productos, importe_envio=:importe_envio, usuarios_id=:usuarios_id, metodos_pago_id=:metodos_pago_id WHERE id=:id RETURNING id")
+            .param("id", id)
+            .param("importe_productos", pedido.importe_productos())
+            .param("importe_envio", pedido.importe_envio())
+            .param("usuarios_id", pedido.usuarios_id())
+            .param("metodos_pago_id", pedido.metodos_pago_id())
+            .query((rs,rowNum) -> rs.getInt("id"))
+            .single();
+        return filas > 0 ? obtenerPedidoPorId(id) : null;
+    }
 }

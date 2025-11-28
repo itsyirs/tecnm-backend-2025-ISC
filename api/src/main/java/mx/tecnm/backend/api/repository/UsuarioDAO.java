@@ -45,4 +45,17 @@ public class UsuarioDAO {
             .single();
         return filas > 0 ? obtenerUsuarioPorId(id) : null;
     }
+    public Usuario actualizarUsuario(int id, UsuarioDTO usuario) {
+        int filas = jdbcClient.sql("UPDATE usuarios SET nombre=:nombre, email=:email, telefono=:telefono, sexo=:sexo::sexo_enum, fecha_nacimiento=:fecha_nacimiento, contrasena=:contrasena WHERE id=:id RETURNING id")
+            .param("id", id)
+            .param("nombre",usuario.nombre())
+            .param("email",usuario.email())
+            .param("telefono",usuario.telefono())
+            .param("sexo",usuario.sexo().name()) // pass enum name directly; SQL casts with ?::sexo_enum
+            .param("fecha_nacimiento",usuario.fecha_nacimiento())
+            .param("contrasena",usuario.contrasena())
+            .query((rs,rowNum) -> rs.getInt("id"))
+            .single();
+        return filas > 0 ? obtenerUsuarioPorId(id) : null;
+    }
 }
