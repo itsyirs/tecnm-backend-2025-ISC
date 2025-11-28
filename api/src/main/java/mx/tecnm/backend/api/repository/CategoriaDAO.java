@@ -15,4 +15,20 @@ public class CategoriaDAO {
                 .query(new CategoriaRM())
                 .list();
     }
+    public Categoria obtenCategoriaPorId(int id){
+        String sql= "SELECT id, nombre FROM categorias WHERE id = :id";
+        List<Categoria> categorias = jdbcClient.sql(sql)
+            .param("id", id)
+            .query(new CategoriaRM())
+            .list();
+        
+        return categorias.isEmpty() ? null : categorias.get(0);
+    }
+    public Categoria insertarCategoria(String categoria) {
+        String sql = "INSERT INTO categorias (nombre) VALUES (:nombre) RETURNING id, nombre";
+        return jdbcClient.sql(sql)
+                .param("nombre", categoria)
+                .query(new CategoriaRM())
+                .single();
+    }
 }
