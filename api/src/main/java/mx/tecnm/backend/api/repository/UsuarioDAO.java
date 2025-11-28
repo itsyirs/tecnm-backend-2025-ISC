@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import mx.tecnm.backend.api.dto.UsuarioDTO;
 import mx.tecnm.backend.api.models.Usuario;
-import mx.tecnm.dto.UsuarioDTO;
 
 @Repository
 public class UsuarioDAO {

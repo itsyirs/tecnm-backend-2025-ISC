@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import mx.tecnm.backend.api.dto.UsuarioDTO;
 import mx.tecnm.backend.api.models.Usuario;
 import mx.tecnm.backend.api.repository.UsuarioDAO;
-import mx.tecnm.dto.UsuarioDTO;
 
 @RestController
 @RequestMapping("/usuarios")

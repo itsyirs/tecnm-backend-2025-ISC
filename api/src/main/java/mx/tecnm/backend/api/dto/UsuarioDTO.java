@@ -1,4 +1,4 @@
-package mx.tecnm.dto;
+package mx.tecnm.backend.api.dto;
 
 import java.time.LocalDate;
 
