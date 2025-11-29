@@ -3,6 +3,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
+
+
 import mx.tecnm.backend.api.models.Categoria;
 @Repository
 public class CategoriaDAO {
@@ -10,7 +12,7 @@ public class CategoriaDAO {
     private JdbcClient jdbcClient;
 
     public List<Categoria> obtenerCategorias() {
-        String sql = "SELECT id, nombre FROM categorias";
+        String sql = "SELECT id, nombre FROM categorias WHERE activo=true";
         return jdbcClient.sql(sql)
                 .query(new CategoriaRM())
                 .list();
@@ -31,4 +33,20 @@ public class CategoriaDAO {
                 .query(new CategoriaRM())
                 .single();
     }
+    public Categoria actualizarCategoria(int id, String nombre) {
+        String sql = "UPDATE categorias SET nombre = :nombre WHERE id = :id RETURNING id, nombre";
+        return jdbcClient.sql(sql)
+                .param("id", id)
+                .param("nombre", nombre)
+                .query(new CategoriaRM())
+                .single();
+    }
+    public Categoria desactivarCategoria(int id) {
+        String sql = "UPDATE categorias SET activo = false WHERE id = :id RETURNING id";
+        return jdbcClient.sql(sql)
+                .param("id", id)
+                .query(new CategoriaRM())
+                .single();
+    }
+    
 }

@@ -3,9 +3,11 @@ package mx.tecnm.backend.api.controllers;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import mx.tecnm.backend.api.models.Categoria;
@@ -37,5 +39,24 @@ public class CategoriaController {
         Categoria nuevaCategoria = repo.insertarCategoria(nombre);
         return ResponseEntity.status(201).body(nuevaCategoria);
     }
+   @DeleteMapping("/{id}")
+    public ResponseEntity<Categoria> desactivarCategoria(@PathVariable int id) {
+        Categoria categoriaDesactivada = repo.desactivarCategoria(id);
+        if (categoriaDesactivada != null) {
+            return ResponseEntity.ok(categoriaDesactivada); 
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @PutMapping("/{id}/{nombre}")
+    public ResponseEntity<Categoria> actualizarCategoria(@PathVariable int id, @PathVariable String nombre) {
+        Categoria categoriaActualizada = repo.actualizarCategoria(id, nombre);
+        if (categoriaActualizada != null) {
+            return ResponseEntity.ok(categoriaActualizada);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
 
 }
