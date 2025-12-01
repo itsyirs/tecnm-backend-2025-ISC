@@ -21,4 +21,40 @@ public class MetodoPagoController {
         List<MetodoPago> resultado = metodoPagoDAO.obtenerMetodosPago();
         return ResponseEntity.ok(resultado);
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<MetodoPago> obtenerPorId(int id) {
+        MetodoPago metodoPago = metodoPagoDAO.obtenerPorId(id);
+        if (metodoPago != null) {
+            return ResponseEntity.ok(metodoPago);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @PostMapping
+    public ResponseEntity<MetodoPago> insertarMetodoPago(@RequestBody MetodoPago metodoPago) {
+        MetodoPago nuevoMetodoPago = metodoPagoDAO.insertarMetodoPago(metodoPago);  
+        if(nuevoMetodoPago != null){
+            return ResponseEntity.status(201).body(nuevoMetodoPago);
+        }else{
+            return ResponseEntity.status(500).build("Error al agregar el metodo de pago");
+        }
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<MetodoPago> desactivarMetodoPago(@PathVariable int id) {
+        MetodoPago metodoPagoDesactivado = metodoPagoDAO.desactivarMetodoPago(id);
+        if (metodoPagoDesactivado != null) {
+            return ResponseEntity.ok(metodoPagoDesactivado);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<MetodoPago> actualizarMetodoPago(@PathVariable int id, @RequestBody MetodoPago metodoPago) {
+        MetodoPago metodoPagoActualizado = metodoPagoDAO.actualizarMetodoPago(id, metodoPago);
+        if (metodoPagoActualizado != null) {
+            return ResponseEntity.ok(metodoPagoActualizado);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
