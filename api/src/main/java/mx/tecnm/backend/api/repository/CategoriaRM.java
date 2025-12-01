@@ -9,4 +9,5 @@ public class CategoriaRM implements RowMapper<Categoria> {
                 rs.getInt("id"),
                 rs.getString("nombre"));
     }
+
 }
