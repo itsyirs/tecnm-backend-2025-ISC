@@ -76,6 +76,7 @@ public class DetallesPedidoController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
 
     @PostMapping("/generar-pedido")
     public ResponseEntity<DetallesPedido> generarPedido(@RequestBody int usuarioId) {
