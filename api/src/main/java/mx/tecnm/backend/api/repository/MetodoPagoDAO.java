@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import mx.tecnm.backend.api.models.MetodoPago;
+import mx.tecnm.backend.api.dto.MetodoPagoDTO;
 
 @Repository
 public class MetodoPagoDAO {
@@ -18,7 +19,7 @@ public class MetodoPagoDAO {
                 .query(new MetodoPagoRW())
                 .list();
     }
-    public MetodoPago obtenerPorId(int id) {
+    public MetodoPago obtenerPorIdMetodoPago(int id) {
         String sql = """
             SELECT id, nombre, comision
             FROM metodos_pago
@@ -31,20 +32,21 @@ public class MetodoPagoDAO {
 
         return lista.isEmpty() ? null : lista.get(0);
     }
-    public MetodoPago insertar(MetodoPago dto) {
+    public MetodoPago insertarMetodoPago(MetodoPagoDTO dto) {
         int nuevoId = jdbcClient.sql("""
                 INSERT INTO metodos_pago(nombre, comision)
                 VALUES (:nombre, :comision)
                 RETURNING id
             """)
-            .param("nombre", dto.getNombre())
-            .param("comision", dto.getComision())
+            .param("nombre", dto.nombre())
+            .param("comision", dto.comision())
             .query((rs, rowNum) -> rs.getInt("id"))
             .single();
 
-        return obtenerPorId(nuevoId);
+        return obtenerPorIdMetodoPago(nuevoId);
     }
-    public MetodoPago actualizar(int id, MetodoPago dto) {
+    
+    public MetodoPago actualizarMetodoPago(int id, MetodoPagoDTO dto) {
         int filas = jdbcClient.sql("""
                 UPDATE metodos_pago
                 SET nombre = :nombre,
@@ -53,23 +55,25 @@ public class MetodoPagoDAO {
                 RETURNING id
             """)
             .param("id", id)
-            .param("nombre", dto.getNombre())
-            .param("comision", dto.getComision())
+            .param("nombre", dto.nombre())
+            .param("comision", dto.comision())
             .query((rs, rowNum) -> rs.getInt("id"))
             .single();
 
-        return filas > 0 ? obtenerPorId(id) : null;
+        return filas > 0 ? obtenerPorIdMetodoPago(id) : null;
     }
-    @DeleteMapping("/{id}")
-    public boolean desactivar(int id) {
+    
+    public MetodoPago desactivarMetodoPago(int id) {
         int filas = jdbcClient.sql("""
                 UPDATE metodos_pago
                 SET activo = false
                 WHERE id = :id
             """)
             .param("id", id)
-            .update();
+            .query((rs,rowNum) -> rs.getInt("id"))
+            .single();
 
-        return filas > 0;
+        return filas > 0 ? obtenerPorIdMetodoPago(id) : null;
     }
+
 }

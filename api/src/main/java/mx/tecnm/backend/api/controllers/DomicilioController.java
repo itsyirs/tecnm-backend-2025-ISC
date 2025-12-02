@@ -10,6 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import mx.tecnm.backend.api.models.Domicilio;
 import mx.tecnm.backend.api.repository.DomicilioDAO;
+import mx.tecnm.backend.api.dto.DomicilioDTO;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/domicilios")
@@ -23,7 +29,7 @@ public class DomicilioController {
     }
     @GetMapping("/{id}")
     public ResponseEntity<Domicilio> obtenerPorId(int id) {
-        Domicilio domicilio = domicilioDAO.obtenerPorId(id);
+        Domicilio domicilio = domicilioDAO.obtenerDomicilioPorId(id);
         if (domicilio != null) {
             return ResponseEntity.ok(domicilio);
         } else {
@@ -31,12 +37,12 @@ public class DomicilioController {
         }
     }
     @PostMapping
-    public ResponseEntity<Domicilio> insertarDomicilio(@RequestBody Domicilio domicilio) {
+    public ResponseEntity<?> insertarDomicilio(@RequestBody DomicilioDTO domicilio) {
         Domicilio nuevoDomicilio = domicilioDAO.insertarDomicilio(domicilio);  
         if(nuevoDomicilio != null){
             return ResponseEntity.status(201).body(nuevoDomicilio);
         }else{
-            return ResponseEntity.status(500).build("Error al agregar el domicilio");
+            return ResponseEntity.status(500).body("Error al agregar el domicilio");
         }
     }
     @DeleteMapping("/{id}")
@@ -49,7 +55,7 @@ public class DomicilioController {
         }
     }
     @PutMapping("/{id}")
-    public ResponseEntity<Domicilio> actualizarDomicilio(@PathVariable int id, @RequestBody Domicilio domicilio) {
+    public ResponseEntity<Domicilio> actualizarDomicilio(@PathVariable int id, @RequestBody DomicilioDTO domicilio) {
         Domicilio domicilioActualizado = domicilioDAO.actualizarDomicilio(id, domicilio);
         if (domicilioActualizado != null) {
             return ResponseEntity.ok(domicilioActualizado);

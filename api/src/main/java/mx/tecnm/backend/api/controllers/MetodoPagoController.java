@@ -10,6 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import mx.tecnm.backend.api.models.MetodoPago;
 import mx.tecnm.backend.api.repository.MetodoPagoDAO;
+import mx.tecnm.backend.api.dto.MetodoPagoDTO;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/metodos-pago")
@@ -23,7 +29,7 @@ public class MetodoPagoController {
     }
     @GetMapping("/{id}")
     public ResponseEntity<MetodoPago> obtenerPorId(int id) {
-        MetodoPago metodoPago = metodoPagoDAO.obtenerPorId(id);
+        MetodoPago metodoPago = metodoPagoDAO.obtenerPorIdMetodoPago(id);
         if (metodoPago != null) {
             return ResponseEntity.ok(metodoPago);
         } else {
@@ -31,14 +37,15 @@ public class MetodoPagoController {
         }
     }
     @PostMapping
-    public ResponseEntity<MetodoPago> insertarMetodoPago(@RequestBody MetodoPago metodoPago) {
+    public ResponseEntity<?> insertarMetodoPago(@RequestBody MetodoPagoDTO metodoPago) {
         MetodoPago nuevoMetodoPago = metodoPagoDAO.insertarMetodoPago(metodoPago);  
         if(nuevoMetodoPago != null){
             return ResponseEntity.status(201).body(nuevoMetodoPago);
         }else{
-            return ResponseEntity.status(500).build("Error al agregar el metodo de pago");
+            return ResponseEntity.status(500).body("error");
         }
     }
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<MetodoPago> desactivarMetodoPago(@PathVariable int id) {
         MetodoPago metodoPagoDesactivado = metodoPagoDAO.desactivarMetodoPago(id);
@@ -49,7 +56,7 @@ public class MetodoPagoController {
         }
     }
     @PutMapping("/{id}")
-    public ResponseEntity<MetodoPago> actualizarMetodoPago(@PathVariable int id, @RequestBody MetodoPago metodoPago) {
+    public ResponseEntity<MetodoPago> actualizarMetodoPago(@PathVariable int id, @RequestBody MetodoPagoDTO metodoPago) {
         MetodoPago metodoPagoActualizado = metodoPagoDAO.actualizarMetodoPago(id, metodoPago);
         if (metodoPagoActualizado != null) {
             return ResponseEntity.ok(metodoPagoActualizado);

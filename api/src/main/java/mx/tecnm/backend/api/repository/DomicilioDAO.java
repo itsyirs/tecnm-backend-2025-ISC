@@ -7,7 +7,8 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import mx.tecnm.backend.api.models.Domicilio;
-
+import mx.tecnm.backend.api.models.MetodoPago;
+import mx.tecnm.backend.api.dto.DomicilioDTO;
 @Repository
 public class DomicilioDAO {
     @Autowired
@@ -19,7 +20,7 @@ public class DomicilioDAO {
                 .list();
     }
     //insertar domicilio
-    public Domicilio insertarDomicilio(Domicilio domicilio) {
+    public Domicilio insertarDomicilio(DomicilioDTO domicilio) {
 
         String sql = """
                 INSERT INTO domicilio (calle, numero, colonia, ciudad, estado, usuarios_id)
@@ -49,7 +50,7 @@ public class DomicilioDAO {
     }
 
     //actualizar domicilio
-   public Domicilio actualizarDomicilio(Domicilio domicilio) {
+   public Domicilio actualizarDomicilio(int id, DomicilioDTO domicilio) {
 
         String sql = """
                 UPDATE domicilio SET
@@ -78,12 +79,13 @@ public class DomicilioDAO {
         String sql = """
                 UPDATE domicilio SET activo = false
                 WHERE id = :id
-                RETURNING id, calle, numero, colonia, ciudad, estado, activo, usuarios_id
                 """;
 
-        return jdbcClient.sql(sql)
+        int filas = jdbcClient.sql(sql)
                 .param("id", id)
-                .query(new DomicilioRM())
-                .single();
+            .query((rs,rowNum) -> rs.getInt("id"))
+            .single();
+        return filas > 0 ? obtenerDomicilioPorId(id) : null;
     }
+    
 }
