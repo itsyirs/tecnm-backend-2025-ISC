@@ -81,7 +81,7 @@ public class DetallesCarritoController {
         }
     }
     
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/quitar/{id}")
     public ResponseEntity<?> quitarProductoDelCarrito(@PathVariable int id) {
         boolean exito = detallesCarritoDAO.quitarProductoDelCarrito(id);
         if (exito) {
