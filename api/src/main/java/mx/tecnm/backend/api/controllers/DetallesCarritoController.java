@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
-@RequestMapping("/apidetalles-carrito")
+@RequestMapping("/detalles-carrito")
 public class DetallesCarritoController {
     @Autowired
     private DetallesCarritoDAO detallesCarritoDAO;

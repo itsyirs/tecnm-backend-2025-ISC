@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import mx.tecnm.backend.api.models.Domicilio;
-import mx.tecnm.backend.api.models.MetodoPago;
 import mx.tecnm.backend.api.dto.DomicilioDTO;
 @Repository
 public class DomicilioDAO {
