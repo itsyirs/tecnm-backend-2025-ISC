@@ -13,19 +13,19 @@ import mx.tecnm.backend.api.dto.MetodoPagoDTO;
 public class MetodoPagoDAO {
     @Autowired
     private JdbcClient jdbcClient;
-    public List<mx.tecnm.backend.api.models.MetodoPago> obtenerMetodosPago() {
+    public List<MetodoPago> obtenerMetodosPago() {
         String sql = "SELECT id, nombre, comision FROM metodos_pago where activo=true)";
         return jdbcClient.sql(sql)
                 .query(new MetodoPagoRW())
                 .list();
     }
-    public MetodoPago obtenerPorIdMetodoPago(int id) {
+    public MetodoPago obtenerMetodoPagoPorId(int id) {
         String sql = """
             SELECT id, nombre, comision
             FROM metodos_pago
             WHERE id = :id and activo=true""";
 
-        List<mx.tecnm.backend.api.models.MetodoPago> lista = jdbcClient.sql(sql)
+        List<MetodoPago> lista = jdbcClient.sql(sql)
                 .param("id", id)
                 .query(new MetodoPagoRW())
                 .list();
@@ -43,7 +43,7 @@ public class MetodoPagoDAO {
             .query((rs, rowNum) -> rs.getInt("id"))
             .single();
 
-        return obtenerPorIdMetodoPago(nuevoId);
+        return obtenerMetodoPagoPorId(nuevoId);
     }
     
     public MetodoPago actualizarMetodoPago(int id, MetodoPagoDTO dto) {
@@ -60,7 +60,7 @@ public class MetodoPagoDAO {
             .query((rs, rowNum) -> rs.getInt("id"))
             .single();
 
-        return filas > 0 ? obtenerPorIdMetodoPago(id) : null;
+        return filas > 0 ? obtenerMetodoPagoPorId(id) : null;
     }
     
     public MetodoPago desactivarMetodoPago(int id) {
@@ -73,7 +73,7 @@ public class MetodoPagoDAO {
             .query((rs,rowNum) -> rs.getInt("id"))
             .single();
 
-        return filas > 0 ? obtenerPorIdMetodoPago(id) : null;
+        return filas > 0 ? obtenerMetodoPagoPorId(id) : null;
     }
 
 }

@@ -28,8 +28,8 @@ public class MetodoPagoController {
         return ResponseEntity.ok(resultado);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<MetodoPago> obtenerPorId(int id) {
-        MetodoPago metodoPago = metodoPagoDAO.obtenerPorIdMetodoPago(id);
+    public ResponseEntity<MetodoPago> obtenerMetodoPagoPorId(int id) {
+        MetodoPago metodoPago = metodoPagoDAO.obtenerMetodoPagoPorId(id);
         if (metodoPago != null) {
             return ResponseEntity.ok(metodoPago);
         } else {
