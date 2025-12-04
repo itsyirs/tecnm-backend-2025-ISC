@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import mx.tecnm.backend.api.dto.EnvioDTO;
 import mx.tecnm.backend.api.models.Envio;
 import mx.tecnm.backend.api.repository.EnvioDAO;
 
@@ -36,7 +37,8 @@ public class EnvioController {
         }
     }
     @PostMapping
-    public ResponseEntity<?> insertarEnvio(@RequestBody Envio envio) {
+    public ResponseEntity<?> insertarEnvio(@RequestBody EnvioDTO envio) {
+        System.out.println("DTO recibido: " + envio);
         Envio envioInsertado = envioDAO.insertarEnvio(envio);
         if (envioInsertado != null) {
             return ResponseEntity.status(201).body(envioInsertado);
