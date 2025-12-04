@@ -21,7 +21,7 @@ public class DetallesPedidoDAO {
     }
     public DetallesPedido obtenerDetallesPedidoPorId(int id) {
         String sql = """
-            SELECT id, pedidos_id, productos_id, cantidad, precio_unitario, activo
+            SELECT id, pedidos_id, productos_id, cantidad, precio
             FROM detalles_pedido
             WHERE id = :id and activo=true""";
 
@@ -35,7 +35,7 @@ public class DetallesPedidoDAO {
     //crear DetallesPedido
     public DetallesPedido insertarDetallesPedido(DetallesPedidoDTO dto) {
         int nuevoId = jdbcClient.sql("""
-                INSERT INTO detalles_pedido(pedidos_id, productos_id, cantidad, precio_unitario)
+                INSERT INTO detalles_pedido(pedidos_id, productos_id, cantidad, precio)
                 VALUES (:pedidos_id, :productos_id, :cantidad, :precio)
                 RETURNING id
             """)

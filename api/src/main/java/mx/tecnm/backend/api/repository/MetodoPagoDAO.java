@@ -47,20 +47,19 @@ public class MetodoPagoDAO {
     }
     
     public MetodoPago actualizarMetodoPago(int id, MetodoPagoDTO dto) {
-        int filas = jdbcClient.sql("""
-                UPDATE metodos_pago
-                SET nombre = :nombre,
-                    comision = :comision
-                WHERE id = :id
-                RETURNING id
-            """)
-            .param("id", id)
-            .param("nombre", dto.nombre())
-            .param("comision", dto.comision())
-            .query((rs, rowNum) -> rs.getInt("id"))
-            .single();
+    int filas = jdbcClient.sql("""
+            UPDATE metodos_pago
+            SET nombre = :nombre,
+                comision = :comision
+            WHERE id = :id
+        """)
+        .param("id", id)
+        .param("nombre", dto.nombre())
+        .param("comision", dto.comision())
+        .update();  // ← solo update()
 
-        return filas > 0 ? obtenerMetodoPagoPorId(id) : null;
+    // si se actualizó alguna fila, traemos el registro actualizado
+    return filas > 0 ? obtenerMetodoPagoPorId(id) : null;
     }
     
     public MetodoPago desactivarMetodoPago(int id) {
