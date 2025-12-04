@@ -14,7 +14,7 @@ public class MetodoPagoDAO {
     @Autowired
     private JdbcClient jdbcClient;
     public List<MetodoPago> obtenerMetodosPago() {
-        String sql = "SELECT id, nombre, comision FROM metodos_pago where activo=true)";
+        String sql = "SELECT id, nombre, comision FROM metodos_pago where activo=true";
         return jdbcClient.sql(sql)
                 .query(new MetodoPagoRM())
                 .list();
@@ -70,8 +70,7 @@ public class MetodoPagoDAO {
                 WHERE id = :id
             """)
             .param("id", id)
-            .query((rs,rowNum) -> rs.getInt("id"))
-            .single();
+            .update();
 
         return filas > 0 ? obtenerMetodoPagoPorId(id) : null;
     }

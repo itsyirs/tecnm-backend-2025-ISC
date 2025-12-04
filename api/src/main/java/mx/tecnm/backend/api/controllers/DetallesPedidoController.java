@@ -28,7 +28,7 @@ public class DetallesPedidoController {
         return ResponseEntity.ok(resultado);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<DetallesPedido> obtenerDetallesPedidoPorId(int id) {
+    public ResponseEntity<DetallesPedido> obtenerDetallesPedidoPorId(@PathVariable int id) {
         DetallesPedido detallePedido = detallesPedidoDAO.obtenerDetallesPedidoPorId(id);
         if (detallePedido != null) {
             return ResponseEntity.ok(detallePedido);

@@ -31,7 +31,7 @@ public class DetallesCarritoController {
         return ResponseEntity.ok(resultado);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<DetallesCarrito> obtenerDetallesCarritoPorId(int id) {
+    public ResponseEntity<DetallesCarrito> obtenerDetallesCarritoPorId(@PathVariable int id) {
         DetallesCarrito detalleCarrito = detallesCarritoDAO.obtenerDetallesCarritoPorId(id);
         if (detalleCarrito != null) {
             return ResponseEntity.ok(detalleCarrito);

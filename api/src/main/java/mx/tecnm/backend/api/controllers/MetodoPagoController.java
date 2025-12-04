@@ -28,7 +28,7 @@ public class MetodoPagoController {
         return ResponseEntity.ok(resultado);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<MetodoPago> obtenerMetodoPagoPorId(int id) {
+    public ResponseEntity<MetodoPago> obtenerMetodoPagoPorId(@PathVariable int id) {
         MetodoPago metodoPago = metodoPagoDAO.obtenerMetodoPagoPorId(id);
         if (metodoPago != null) {
             return ResponseEntity.ok(metodoPago);

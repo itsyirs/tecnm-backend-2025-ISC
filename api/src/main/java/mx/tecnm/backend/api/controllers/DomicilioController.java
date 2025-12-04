@@ -28,7 +28,7 @@ public class DomicilioController {
         return ResponseEntity.ok(resultado);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<Domicilio> obtenerPorId(int id) {
+    public ResponseEntity<Domicilio> obtenerPorId(@PathVariable int id) {
         Domicilio domicilio = domicilioDAO.obtenerDomicilioPorId(id);
         if (domicilio != null) {
             return ResponseEntity.ok(domicilio);
