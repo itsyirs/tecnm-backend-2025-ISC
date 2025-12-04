@@ -16,7 +16,7 @@ public class MetodoPagoDAO {
     public List<MetodoPago> obtenerMetodosPago() {
         String sql = "SELECT id, nombre, comision FROM metodos_pago where activo=true)";
         return jdbcClient.sql(sql)
-                .query(new MetodoPagoRW())
+                .query(new MetodoPagoRM())
                 .list();
     }
     public MetodoPago obtenerMetodoPagoPorId(int id) {
@@ -27,7 +27,7 @@ public class MetodoPagoDAO {
 
         List<MetodoPago> lista = jdbcClient.sql(sql)
                 .param("id", id)
-                .query(new MetodoPagoRW())
+                .query(new MetodoPagoRM())
                 .list();
 
         return lista.isEmpty() ? null : lista.get(0);
