@@ -22,7 +22,7 @@ public class DomicilioDAO {
     public Domicilio insertarDomicilio(DomicilioDTO domicilio) {
 
         String sql = """
-                INSERT INTO domicilio (calle, numero, colonia, ciudad, estado, usuarios_id)
+                INSERT INTO domicilios (calle, numero, colonia, ciudad, estado, usuarios_id)
                 VALUES (:calle, :numero, :colonia, :ciudad, :estado, :usuarioId)
                 RETURNING id, calle, numero, colonia, ciudad, estado, activo, usuarios_id
                 """;
@@ -38,8 +38,8 @@ public class DomicilioDAO {
                 .single();
     }
     //buscar por id
-    public Domicilio obtenerDomicilioPorId(int id) {
-        String sql = "SELECT id, calle, numero, colonia, ciudad, estado, activo, usuarios_id FROM domicilio WHERE id = :id";
+    public Domicilio obtenerDomiciliosPorId(int id) {
+        String sql = "SELECT id, calle, numero, colonia, ciudad, estado, activo, usuarios_id FROM domicilios WHERE id = :id";
         List<Domicilio> lista = jdbcClient.sql(sql)
                 .param("id", id)
                 .query(new DomicilioRM())
@@ -52,7 +52,7 @@ public class DomicilioDAO {
    public Domicilio actualizarDomicilio(int id, DomicilioDTO domicilio) {
 
         String sql = """
-                UPDATE domicilio SET
+                UPDATE domicilios SET
                     calle = :calle,
                     numero = :numero,
                     colonia = :colonia,
@@ -76,15 +76,14 @@ public class DomicilioDAO {
     public Domicilio desactivarDomicilio(int id) {
 
         String sql = """
-                UPDATE domicilio SET activo = false
+                UPDATE domicilios SET activo = false
                 WHERE id = :id
                 """;
 
         int filas = jdbcClient.sql(sql)
-                .param("id", id)
-            .query((rs,rowNum) -> rs.getInt("id"))
-            .single();
-        return filas > 0 ? obtenerDomicilioPorId(id) : null;
+            .param("id", id)
+            .update();
+        return filas > 0 ? obtenerDomiciliosPorId(id) : null;
     }
     
 }
