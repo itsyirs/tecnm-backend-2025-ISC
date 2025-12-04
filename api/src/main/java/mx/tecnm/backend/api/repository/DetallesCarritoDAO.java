@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+
 import mx.tecnm.backend.api.models.DetallesCarrito;
 import mx.tecnm.backend.api.models.Pedido;
+import mx.tecnm.backend.api.dto.DetallesCarritoDTO;
+import mx.tecnm.backend.api.dto.DetallesPedidoDTO;
 
 @Repository
 public class DetallesCarritoDAO {
@@ -19,8 +22,74 @@ public class DetallesCarritoDAO {
                 .query(new DetallesCarritoRM())
                 .list();
     }
+    public DetallesCarrito obtenerDetallesCarritoPorId(int id) {
+        String sql = """
+            SELECT id, cantidad, precio, productos_id, usuarios_id
+            FROM detalles_carrito
+            WHERE id = :id""";
 
-    public DetallesCarrito agregarProductoAlCarrito(int usuarioId, int productoId, int cantidadAgregar, double precioUnitario) {
+        List<DetallesCarrito> lista = jdbcClient.sql(sql)
+                .param("id", id)
+                .query(new DetallesCarritoRM())
+                .list();
+
+        return lista.isEmpty() ? null : lista.get(0);
+    }
+    public DetallesCarrito insertarDetallesCarrito(DetallesCarritoDTO dto) {
+
+        String sql = """
+                INSERT INTO detalles_carrito (cantidad, precio, productos_id, usuarios_id)
+                VALUES (:cantidad, :precio, :productos_id, :usuarios_id)
+                RETURNING id, cantidad, precio, productos_id, usuarios_id
+                """;
+
+        return jdbcClient.sql(sql)
+                .param("cantidad", dto.cantidad())
+                .param("precio", dto.precio())
+                .param("productos_id", dto.productos_id())
+                .param("usuarios_id", dto.usuarios_id())
+                .query(new DetallesCarritoRM())
+                .single();
+    }
+    public DetallesCarrito actualizarDetallesCarrito(int id, DetallesCarritoDTO dto) {
+
+        String sql = """
+                UPDATE detalles_carrito SET
+                    cantidad = :cantidad,
+                    precio = :precio,
+                    productos_id = :productos_id,
+                    usuarios_id = :usuarios_id
+                WHERE id = :id
+                RETURNING id, cantidad, precio, productos_id, usuarios_id
+                """;
+
+        int filas = jdbcClient.sql(sql)
+                .param("cantidad", dto.cantidad())
+                .param("precio", dto.precio())
+                .param("productos_id", dto.productos_id())
+                .param("usuarios_id", dto.usuarios_id())
+                .param("id", id)
+                 .query((rs,rowNum) -> rs.getInt("id"))
+            .single();
+        return filas > 0 ? obtenerDetallesCarritoPorId(id) : null;
+    }
+    
+     
+    public DetallesCarrito desactivarDetallesCarrito(int id) {
+        String sql = """
+                UPDATE detalles_carrito
+                SET activo = false
+                WHERE id = :id
+            """;
+
+        int filas = jdbcClient.sql(sql)
+                .param("id", id)
+            .query((rs, rowNum) -> rs.getInt("id"))
+            .single();
+        return filas > 0 ? obtenerDetallesCarritoPorId(id) : null;
+    }
+    
+    public DetallesCarrito agregarProductoAlCarrito(DetallesPedidoDTO dto, int usuarioId, int productoId, int cantidadAgregar, double precioUnitario) {
     // comprobar si el producto ya existe en el carrito del usuario
     String sqlBuscar = "SELECT id, cantidad, precio, productos_id, usuarios_id " +
                        "FROM detalles_carrito " +
