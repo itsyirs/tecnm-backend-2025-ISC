@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import mx.tecnm.backend.api.models.DetallesCarrito;
 import mx.tecnm.backend.api.models.Pedido;
+import mx.tecnm.backend.api.dto.AgregarPedidoDTO;
+import mx.tecnm.backend.api.dto.PUTDetallesCarritoDTO;
 import mx.tecnm.backend.api.dto.DetallesCarritoDTO;
 import mx.tecnm.backend.api.dto.DetallesPedidoDTO;
 import mx.tecnm.backend.api.dto.UsuarioIdDTO;
@@ -43,58 +45,33 @@ public class DetallesCarritoController {
     @PostMapping
     public ResponseEntity<?> insertarDetallesCarrito(@RequestBody DetallesCarritoDTO detallesCarrito) {
         DetallesCarrito nuevoDetallesCarrito = detallesCarritoDAO.insertarDetallesCarrito(detallesCarrito);
-        if(nuevoDetallesCarrito == null){
+        if(nuevoDetallesCarrito != null){
             return ResponseEntity.status(201).body(nuevoDetallesCarrito);
         }else{
             return ResponseEntity.status(500).body("Error al agregar el detalle del carrito");
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<DetallesCarrito> desactivarDetallesCarrito(@PathVariable int id) {
-        DetallesCarrito detallesCarritoDesactivado = detallesCarritoDAO.desactivarDetallesCarrito(id);
-        if (detallesCarritoDesactivado != null) {
-            return ResponseEntity.ok(detallesCarritoDesactivado);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @DeleteMapping()
+    public ResponseEntity<Boolean> desactivarDetallesCarrito(@RequestBody PUTDetallesCarritoDTO dto) {
+        Boolean detallesCarritoDesactivado = detallesCarritoDAO.quitarProductoDelCarrito(dto);
+        return ResponseEntity.ok(detallesCarritoDesactivado);
     }
     
-    @PutMapping("/{id}")
-    public ResponseEntity<DetallesCarrito> actualizarDetallesCarrito(@PathVariable int id, @RequestBody DetallesCarritoDTO detalleCarrito) {
-        DetallesCarrito detalleCarritoActualizado = detallesCarritoDAO.actualizarDetallesCarrito(id, detalleCarrito);
+    @PutMapping()
+    public ResponseEntity<DetallesCarrito> actualizarDetallesCarrito(@RequestBody PUTDetallesCarritoDTO detalleCarrito) {
+        DetallesCarrito detalleCarritoActualizado = detallesCarritoDAO.actualizarCantidad(detalleCarrito);
         if (detalleCarritoActualizado != null) {
             return ResponseEntity.ok(detalleCarritoActualizado);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
- 
-    
-    @PostMapping("/agregar")
-    public ResponseEntity<?> agregarProductoAlCarrito(@RequestBody DetallesPedidoDTO dto, int usuario_id, int producto_id, int cantidadAgregar,double precioUnitario) {
-            DetallesCarrito nuevoDetalle = detallesCarritoDAO.agregarProductoAlCarrito(dto,usuario_id,producto_id,cantidadAgregar,precioUnitario);
-        if(nuevoDetalle != null){
-            return ResponseEntity.status(201).body(nuevoDetalle);
-        } else {
-            return ResponseEntity.status(500).body("Error al agregar producto: ");
-        }
-    }
-    
-    @DeleteMapping("/quitar/{id}")
-    public ResponseEntity<?> quitarProductoDelCarrito(@PathVariable int id) {
-        boolean exito = detallesCarritoDAO.quitarProductoDelCarrito(id);
-        if (exito) {
-            return ResponseEntity.ok("Producto eliminado del carrito");
-        } else {
-            return ResponseEntity.status(500).body("No se encontró el producto en el carrito");
-        }
-    }
 
     @PostMapping("/generar-pedido")
-    public ResponseEntity<?> generarPedido(@RequestBody UsuarioIdDTO dto) {
+    public ResponseEntity<?> generarPedido(@RequestBody AgregarPedidoDTO dto) {
 
-        Pedido pedidoGenerado = detallesCarritoDAO.generarPedido(dto.UsuarioId());
+        Pedido pedidoGenerado = detallesCarritoDAO.generarPedido(dto);
 
         if (pedidoGenerado != null) {
             return ResponseEntity.status(201).body(pedidoGenerado);

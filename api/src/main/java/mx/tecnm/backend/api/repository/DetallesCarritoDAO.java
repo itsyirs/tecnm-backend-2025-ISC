@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 
 import mx.tecnm.backend.api.models.DetallesCarrito;
 import mx.tecnm.backend.api.models.Pedido;
+import mx.tecnm.backend.api.models.Producto;
+import mx.tecnm.backend.api.dto.AgregarPedidoDTO;
+import mx.tecnm.backend.api.dto.PUTDetallesCarritoDTO;
 import mx.tecnm.backend.api.dto.DetallesCarritoDTO;
 import mx.tecnm.backend.api.dto.DetallesPedidoDTO;
 
@@ -16,6 +19,8 @@ import mx.tecnm.backend.api.dto.DetallesPedidoDTO;
 public class DetallesCarritoDAO {
     @Autowired
     private JdbcClient jdbcClient;
+    @Autowired
+    private ProductoDAO productoDAO;
     public List<DetallesCarrito> obtenerDetallesCarrito() {
         String sql = "SELECT id, cantidad, precio, productos_id, usuarios_id FROM detalles_carrito";
         return jdbcClient.sql(sql)
@@ -36,7 +41,30 @@ public class DetallesCarritoDAO {
         return lista.isEmpty() ? null : lista.get(0);
     }
     public DetallesCarrito insertarDetallesCarrito(DetallesCarritoDTO dto) {
+        Producto producto = productoDAO.obtenerProductoPorId(dto.productos_id());
+        List<DetallesCarrito> existente = obtenerDetallesCarrito();
+        for (int i=0;i<existente.size();i++){
+            if(existente.get(i).productos_id()==dto.productos_id() && existente.get(i).usuarios_id()==dto.usuarios_id()){
+                int nuevaCantidad= existente.get(i).cantidad()+dto.cantidad();
+                double nuevoPrecio= producto != null ? producto.precio() * nuevaCantidad : 0.0;
 
+                String sqlActualizar = """
+                        UPDATE detalles_carrito
+                        SET cantidad = :cantidad,
+                            precio = :precio
+                        WHERE id = :id
+                        RETURNING id, cantidad, precio, productos_id, usuarios_id
+                        """;
+
+                return jdbcClient.sql(sqlActualizar)
+                        .param("cantidad", nuevaCantidad)
+                        .param("precio", nuevoPrecio)
+                        .param("id", existente.get(i).id())
+                        .query(new DetallesCarritoRM())
+                        .single();
+            }
+        }
+        double precio= producto != null ? producto.precio() : 0.0;
         String sql = """
                 INSERT INTO detalles_carrito (cantidad, precio, productos_id, usuarios_id)
                 VALUES (:cantidad, :precio, :productos_id, :usuarios_id)
@@ -45,112 +73,75 @@ public class DetallesCarritoDAO {
 
         return jdbcClient.sql(sql)
                 .param("cantidad", dto.cantidad())
-                .param("precio", dto.precio())
+                .param("precio", precio)
                 .param("productos_id", dto.productos_id())
                 .param("usuarios_id", dto.usuarios_id())
                 .query(new DetallesCarritoRM())
                 .single();
     }
-    public DetallesCarrito actualizarDetallesCarrito(int id, DetallesCarritoDTO dto) {
-
-        String sql = """
-                UPDATE detalles_carrito SET
-                    cantidad = :cantidad,
-                    precio = :precio,
-                    productos_id = :productos_id,
-                    usuarios_id = :usuarios_id
-                WHERE id = :id
-                RETURNING id, cantidad, precio, productos_id, usuarios_id
-                """;
-
-        int filas = jdbcClient.sql(sql)
-                .param("cantidad", dto.cantidad())
-                .param("precio", dto.precio())
-                .param("productos_id", dto.productos_id())
-                .param("usuarios_id", dto.usuarios_id())
-                .param("id", id)
-                 .query((rs,rowNum) -> rs.getInt("id"))
-            .single();
-        return filas > 0 ? obtenerDetallesCarritoPorId(id) : null;
-    }
-    
-     
-    public DetallesCarrito desactivarDetallesCarrito(int id) {
-        String sql = """
+    public DetallesCarrito actualizarCantidad(PUTDetallesCarritoDTO dto) {
+        double nuevoPrecio = productoDAO.obtenerProductoPorId(dto.productos_id()).precio() * dto.cantidad();
+        DetallesCarrito filas = jdbcClient.sql("""
                 UPDATE detalles_carrito
-                SET activo = false
-                WHERE id = :id
-            """;
-
-        int filas = jdbcClient.sql(sql)
-                .param("id", id)
-            .query((rs, rowNum) -> rs.getInt("id"))
+                SET cantidad = :cantidad,
+                    precio = :precio
+                WHERE productos_id = :id
+                RETURNING id, cantidad, precio, productos_id, usuarios_id
+            """)
+            .param("id", dto.productos_id())
+            .param("cantidad", dto.cantidad())
+            .param("precio", nuevoPrecio)
+            .query(new DetallesCarritoRM())
             .single();
-        return filas > 0 ? obtenerDetallesCarritoPorId(id) : null;
+
+        return filas;
     }
+     
     
-    public DetallesCarrito agregarProductoAlCarrito(DetallesPedidoDTO dto, int usuarioId, int productoId, int cantidadAgregar, double precioUnitario) {
-    // comprobar si el producto ya existe en el carrito del usuario
-    String sqlBuscar = "SELECT id, cantidad, precio, productos_id, usuarios_id " +
-                       "FROM detalles_carrito " +
-                       "WHERE usuarios_id = :usuarioId AND productos_id = :productoId";
-
-    List<DetallesCarrito> existentes = jdbcClient.sql(sqlBuscar)
-            .param("usuarioId", usuarioId)
-            .param("productoId", productoId)
-            .query(new DetallesCarritoRM())
-            .list();
-
-    // si existe sumamos la cantidad
-    if (!existentes.isEmpty()) {
-        DetallesCarrito existente = existentes.get(0);
-        int nuevaCantidad = existente.cantidad() + cantidadAgregar;
-        double nuevoPrecio = precioUnitario * nuevaCantidad; // o conserva el precio como lo manejes
-
-        String sqlActualizar = "UPDATE detalles_carrito " +
-                               "SET cantidad = :cantidad, precio = :precio " +
-                               "WHERE id = :id " +
-                               "RETURNING id, cantidad, precio, productos_id, usuarios_id";
-
-        return jdbcClient.sql(sqlActualizar)
-                .param("cantidad", nuevaCantidad)
-                .param("precio", nuevoPrecio)
-                .param("id", existente.id())
-                .query(new DetallesCarritoRM())
-                .single();
-    }
-
-    // agregar nuevo producto al carrito
-    String sqlInsertar = "INSERT INTO detalles_carrito (cantidad, precio, productos_id, usuarios_id) " +
-                         "VALUES (:cantidad, :precio, :productoId, :usuarioId) " +
-                         "RETURNING id, cantidad, precio, productos_id, usuarios_id";
-
-    return jdbcClient.sql(sqlInsertar)
-            .param("cantidad", cantidadAgregar)
-            .param("precio", precioUnitario * cantidadAgregar)
-            .param("productoId", productoId)
-            .param("usuarioId", usuarioId)
-            .query(new DetallesCarritoRM())
-            .single();
-}
+   
 //quitar un producto
-public boolean quitarProductoDelCarrito(int detalleId) {
-    String sql = "DELETE FROM detalles_carrito WHERE id = :id";
+public boolean quitarProductoDelCarrito(PUTDetallesCarritoDTO dto) {
+    List<DetallesCarrito> existente = obtenerDetallesCarrito();
+    for (int i=0;i<existente.size();i++){
+        if(existente.get(i).productos_id()==dto.productos_id() && existente.get(i).usuarios_id()==dto.usuarios_id()){
+            int nuevaCantidad= existente.get(i).cantidad()-dto.cantidad();
+            if(nuevaCantidad>0){
+                Producto producto = productoDAO.obtenerProductoPorId(dto.productos_id());
+                double nuevoPrecio= producto != null ? producto.precio() * nuevaCantidad : 0.0;
+
+               String sqlActualizar = """
+        UPDATE detalles_carrito
+        SET cantidad = :cantidad,
+            precio = :precio
+        WHERE id = :id
+        """;
+
+        jdbcClient.sql(sqlActualizar)
+        .param("cantidad", nuevaCantidad)
+        .param("precio", nuevoPrecio)
+        .param("id", existente.get(i).id())
+        .update();
+        return true;
+            }
+        }
+    }
+    String sql = "DELETE FROM detalles_carrito WHERE productos_id = :id and usuarios_id = :usuarioId";
     int rows = jdbcClient.sql(sql)
-            .param("id", detalleId)
+            .param("id", dto.productos_id())
+            .param("usuarioId", dto.usuarios_id())
             .update();
     return rows > 0;
 }
 
 //crear pedido a partir del carrito
-public Pedido generarPedido(int usuarioId) {
+public Pedido generarPedido(AgregarPedidoDTO dto) {
 
     // 1. Obtener los productos del carrito del usuario
     String sqlCarrito = "SELECT id, cantidad, precio, productos_id, usuarios_id "
-            + "FROM detalles_carrito WHERE usuarios_id = :usuarioId";
+            + "FROM detalles_carrito WHERE usuarios_id = :usuarios_id";
 
     List<DetallesCarrito> carrito = jdbcClient.sql(sqlCarrito)
-            .param("usuarioId", usuarioId)
+            .param("usuarios_id", dto.usuarios_id())
             .query(new DetallesCarritoRM())
             .list();
 
@@ -159,26 +150,30 @@ public Pedido generarPedido(int usuarioId) {
     }
 
     // 2. Crear el pedido
-    String sqlPedido = """
-            INSERT INTO pedido (usuarios_id, fecha, total)
-            VALUES (:usuarioId, NOW(), :total)
-            RETURNING id, usuarios_id, fecha, total
-            """;
+
+       
+String sqlPedido = """
+    INSERT INTO pedidos (usuarios_id, importe_productos, importe_envio, metodos_pago_id)
+    VALUES (:usuarios_id, :importe_productos, :importe_envio, :metodos_pago_id)
+    RETURNING id, usuarios_id, fecha, total, importe_productos, importe_envio, metodos_pago_id, fecha_hora_pago,
+        importe_iva,total, numero
+""";
 
     // Calcular total
-    double total = carrito.stream()
-            .mapToDouble(item -> item.precio() * item.cantidad())
+    double importe_productos = carrito.stream()
+            .mapToDouble(item -> item.precio()*item.cantidad())
             .sum();
-
     Pedido pedido = jdbcClient.sql(sqlPedido)
-            .param("usuarioId", usuarioId)
-            .param("total", total)
+            .param("usuarios_id", dto.usuarios_id())
+            .param("importe_productos", importe_productos)
+            .param("importe_envio", dto.importe_envio())
+                .param("metodos_pago_id", dto.metodos_pago_id())
             .query(new PedidoRM())
             .single();
 
     // 3. Insertar los detalles del pedido
     String sqlDetalles = """
-            INSERT INTO detalles_pedido (pedido_id, productos_id, cantidad, precio)
+            INSERT INTO detalles_pedido (pedidos_id, productos_id, cantidad, precio)
             VALUES (:pedidoId, :productoId, :cantidad, :precio)
             """;
 
@@ -192,10 +187,10 @@ public Pedido generarPedido(int usuarioId) {
     }
 
     // 4. Vaciar carrito
-    String sqlVaciar = "DELETE FROM detalles_carrito WHERE usuarios_id = :usuarioId";
+    String sqlVaciar = "DELETE FROM detalles_carrito WHERE usuarios_id = :usuarios_id";
 
     jdbcClient.sql(sqlVaciar)
-            .param("usuarioId", usuarioId)
+            .param("usuarios_id", dto.usuarios_id())
             .update();
 
     return pedido;

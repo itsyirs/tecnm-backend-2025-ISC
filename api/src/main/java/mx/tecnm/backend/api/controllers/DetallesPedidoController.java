@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import mx.tecnm.backend.api.dto.DetallesPedidoDTO;
+import mx.tecnm.backend.api.dto.PUTDetallesPedidoDTO;
 import mx.tecnm.backend.api.models.DetallesPedido;
 import mx.tecnm.backend.api.repository.DetallesPedidoDAO;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,7 +57,7 @@ public class DetallesPedidoController {
         }
     }
     @PutMapping("/{id}")
-    public ResponseEntity<DetallesPedido> actualizarDetallesPedido(@PathVariable int id, @RequestBody DetallesPedidoDTO detallePedido) {
+    public ResponseEntity<DetallesPedido> actualizarDetallesPedido(@PathVariable int id, @RequestBody PUTDetallesPedidoDTO detallePedido) {
         DetallesPedido detallePedidoActualizado = detallesPedidoDAO.actualizarDetallesPedido(id, detallePedido);
         if (detallePedidoActualizado != null) {
             return ResponseEntity.ok(detallePedidoActualizado);

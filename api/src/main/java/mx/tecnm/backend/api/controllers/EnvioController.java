@@ -36,14 +36,14 @@ public class EnvioController {
             return ResponseEntity.notFound().build();
         }
     }
-    @PostMapping
-    public ResponseEntity<?> insertarEnvio(@RequestBody EnvioDTO envio) {
-        System.out.println("DTO recibido: " + envio);
-        Envio envioInsertado = envioDAO.insertarEnvio(envio);
-        if (envioInsertado != null) {
-            return ResponseEntity.status(201).body(envioInsertado);
+    @PostMapping()
+    public ResponseEntity<?> crearEnvio(@RequestBody EnvioDTO envioDTO) {
+        System.out.println(envioDTO.toString());
+        Envio nuevoEnvio = envioDAO.insertarEnvio(envioDTO);
+        if (nuevoEnvio != null) {
+            return ResponseEntity.status(201).body(nuevoEnvio);
         } else {
-            return ResponseEntity.status(500).body("Error al agregar el envio");
+            return ResponseEntity.badRequest().body("Error al crear el envío");
         }
     }
     @PutMapping("/{id}")

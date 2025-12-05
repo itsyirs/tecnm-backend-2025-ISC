@@ -40,6 +40,7 @@ public class PedidoController {
     @PostMapping
     public ResponseEntity<?> insertarPedido(@RequestBody PedidoDTO pedido)
     {
+            System.out.println("DTO recibido: " + pedido);
         Pedido pedidoInsertado = pedidoDAO.insertarPedido(pedido);
         if (pedidoInsertado != null) {
             return ResponseEntity.status(201).body(pedidoInsertado);

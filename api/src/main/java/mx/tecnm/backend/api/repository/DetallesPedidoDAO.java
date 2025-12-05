@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import mx.tecnm.backend.api.dto.DetallesPedidoDTO;
+import mx.tecnm.backend.api.dto.PUTDetallesPedidoDTO;
 import mx.tecnm.backend.api.models.DetallesPedido;
 
 @Repository
@@ -33,35 +34,32 @@ public class DetallesPedidoDAO {
         return lista.isEmpty() ? null : lista.get(0);
     }
     //crear DetallesPedido
-    public DetallesPedido insertarDetallesPedido(DetallesPedidoDTO dto) {
-        int nuevoId = jdbcClient.sql("""
-                INSERT INTO detalles_pedido(pedidos_id, productos_id, cantidad, precio)
-                VALUES (:pedidos_id, :productos_id, :cantidad, :precio)
-                RETURNING id
-            """)
-            .param("pedidos_id", dto.pedidos_id())
-            .param("productos_id", dto.productos_id())
-            .param("cantidad", dto.cantidad())
-            .param("precio_unitario", dto.precio())
-            .query((rs, rowNum) -> rs.getInt("id"))
-            .single();
+public DetallesPedido insertarDetallesPedido(DetallesPedidoDTO dto) {
+    int nuevoId = jdbcClient.sql("""
+            INSERT INTO detalles_pedido(pedidos_id, productos_id, cantidad, precio)
+            VALUES (:pedidos_id, :productos_id, :cantidad, :precio)
+            RETURNING id
+        """)
+        .param("pedidos_id", dto.pedidos_id())
+        .param("productos_id", dto.productos_id())
+        .param("cantidad", dto.cantidad())
+        .param("precio", dto.precio())  // <--- AQUI EL FIX
+        .query((rs, rowNum) -> rs.getInt("id"))
+        .single();
 
-        return obtenerDetallesPedidoPorId(nuevoId);
-    }
+    return obtenerDetallesPedidoPorId(nuevoId);
+}
 
-    public DetallesPedido actualizarDetallesPedido(int id, DetallesPedidoDTO dto) {
+
+    public DetallesPedido actualizarDetallesPedido(int id, PUTDetallesPedidoDTO dto) {
         int filas = jdbcClient.sql("""
                 UPDATE detalles_pedido
-                SET pedidos_id = :pedidos_id,
-                    productos_id = :productos_id,
-                    cantidad = :cantidad,
+                SET cantidad = :cantidad,
                     precio = :precio
                 WHERE id = :id
                 RETURNING id
             """)
             .param("id", id)
-            .param("pedidos_id", dto.pedidos_id())
-            .param("productos_id", dto.productos_id())
             .param("cantidad", dto.cantidad())
             .param("precio", dto.precio())
             .query((rs, rowNum) -> rs.getInt("id"))
